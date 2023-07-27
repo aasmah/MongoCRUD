@@ -1,0 +1,42 @@
+version: '3'
+services:
+  # MongoDB container definition
+  dockermongo:
+    # name docker image 
+    image: mongo
+    # username and password Admin definition
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admindb 
+      - MONGO_INITDB_ROOT_PASSWORD=pass123 
+    # volume definition
+    volumes:
+      - dbmongo:/data/dbPerson
+    # network definition
+    networks:
+      - netMongoDBServer
+    ports:
+      - 27017:27017
+  # mongo-express container definition 
+  dockermongoexpress:
+    # name docker image
+    image: mongo-express
+    # fixes MongoNetworkError when mongodb is not ready when mongo-express starts
+    restart: always 
+    # definition host and container port
+    ports:
+      - 8081:8081
+    # definition of username and password MongoDB's Admin
+    # name MongoDB container 
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=admindb
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=pass123
+      - ME_CONFIG_MONGODB_SERVER=dockermongo
+    # network definition
+    networks:
+      - netMongoDBServer 
+volumes:
+  dbmongo:
+    driver: local
+networks:
+    netMongoDBServer:
+        driver: bridge
